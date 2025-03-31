@@ -8,7 +8,15 @@ var result = 0
 
 for i in 0..<L {
     var hash = 1
-    hash *= Int(pow(31, Double(i)))%M
-    result += (Int(array[i]) * hash)%M
+    
+    for j in 0...i {
+        if j == 0 {
+            continue
+        } else {
+            hash = (hash * 31)%M
+        }
+    }
+    
+    result = (result + (Int(array[i]) * hash))%M
 }
 print(result)
