@@ -1,20 +1,13 @@
 import Foundation
 
-//7:30 시작
 func solution(_ s:String) -> String {
-    //firstIndex, lastIndex 검색 해서 인덱스가 같은 경우만 정렬전 배열에 넣음
-    var result = [String]()
-    var newS = Array(s)
+    var result = ""
     
-    for e in newS {
-        if newS.firstIndex(of: e) == newS.lastIndex(of: e) {
-            result.append(String(e))
-        } 
+    for i in s {
+        if s.firstIndex(of:i) == s.lastIndex(of:i) {
+            result.append(i)
+        }
     }
-    //sort
-    result.sort()
     
-    //출력
-    return result.joined()
+    return String(Array(result).sorted())
 }
-// 7:37 끝 
