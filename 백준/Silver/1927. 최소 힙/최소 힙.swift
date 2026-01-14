@@ -1,99 +1,60 @@
 import Foundation
 
-struct Heap<T> {
-    var array = [T]()
-    var priorityFunc: (T,T) -> Bool
-    
-    init(priorityFunc: @escaping (T,T) -> Bool) {
-        self.priorityFunc = priorityFunc
-    }
-    
-    mutating func insert(data: T) {
-        array.append(data)
-        if array.count == 1 {
-            return
-        }
-        siftUp()
-    }
-    
-    mutating func remove() -> T? {
-        if array.count == 0 {
-            return nil
-        }
-        let value = array.first
-        array[0] = array[array.count - 1]
-        array.removeLast()
-        siftDown()
-        return value
-    }
-    
-    mutating func siftDown() {
-        var parentIndex = 0
-        while true {
-            var candidateIndex = parentIndex
-            var leftChildIndex = leftChildInd(from: parentIndex)
-            var rightChildIndex = leftChildIndex + 1
-
-            if leftChildIndex < array.count && priorityFunc(array[leftChildIndex], array[candidateIndex]) {
-                candidateIndex = leftChildIndex
-            }
-            
-            if rightChildIndex < array.count && priorityFunc(array[rightChildIndex], array[candidateIndex]) {
-                candidateIndex = rightChildIndex
-            }
-            
-            if candidateIndex == parentIndex {
-                return
-            }
-            array.swapAt(candidateIndex, parentIndex)
-            parentIndex = candidateIndex
-        }
-    }
-    
-    mutating func siftUp() {
-        var childIndex = array.count - 1
-        
-        while true {
-            let parentIndex = parentInd(from: childIndex)
-            
-            if parentIndex == childIndex {
-                return
-            }
-            
-            if priorityFunc(array[childIndex], array[parentIndex]) {
-                array.swapAt(childIndex, parentIndex)
-                childIndex = parentIndex
-            }else {
-                return
-            }
-        }
-    }
-    
-    func leftChildInd(from: Int) -> Int {
-        return (from * 2) + 1
-    }
-    
-    func parentInd(from: Int) -> Int {
-        return (from - 1) / 2
-    }
-    
-
-}
-
-var heap = Heap<Int>(priorityFunc: <)
-
+var heap = minHeap<Int>()
 let N = Int(readLine()!)!
-
 for _ in 0..<N {
     let input = Int(readLine()!)!
-    if input == 0 {
-        let data = heap.remove()
-        if data != nil {
-            print(data!)
-        }else {
-            print(0)
+    if input != 0 {
+        heap.insert(input)
+    } else {
+        let output = heap.delete()
+        if output == nil {
+            print("0")
+        } else {
+            print(output!)
         }
-    }else {
-        heap.insert(data: input)
+    }
+}
+
+struct minHeap<T: Comparable> {
+    var elements = [T]()
+
+    mutating func insert(_ element: T) {
+        elements.append(element)
+        var index = elements.count - 1
+        while true {
+            let parentsIndex = (index - 1) / 2
+            if elements[parentsIndex] <= elements[index] { break }
+            elements.swapAt(parentsIndex,index)
+            index = parentsIndex
+        }
+    }
+
+    mutating func delete() -> T? {
+        if elements.count == 0 {
+            return nil
+        }
+        if elements.count == 1 { return elements.removeLast() }
+
+        let pop = elements[0]
+        var index = 0
+        var target = 0
+        elements[0] = elements.removeLast()
+
+        while true {
+            let lc = index * 2 + 1
+            let rc = index * 2 + 2
+
+            if lc < elements.count && elements[index] > elements[lc] {
+                target = lc
+            }
+            if rc < elements.count &&  elements[target] > elements[rc] {
+                target = rc
+            }
+            if target == index { break }
+            elements.swapAt(target, index)
+            index = target
+        }
+        return pop
     }
 }
