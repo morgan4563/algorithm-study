@@ -1,68 +1,71 @@
 import Foundation
 
-var input = readLine()!.split(separator: " ").map{Int($0)!}
+let input = readLine()!.split(separator: " ").map{Int($0)!}
+let (M,N) = (input[0], input[1])
 
-let maxX = input[0]
-let maxY = input[1]
 var box = [[Int]]()
-var day = 0
 
-for _ in 0..<maxY {
-    box.append(readLine()!.split(separator: " ").map{Int($0)!})
+for _ in 0..<N {
+    let input2 = readLine()!.split(separator: " ").map{Int($0)!}
+    box.append(input2)
 }
 
-var queue = [(Int,Int)]()
+var q = [(Int,Int)]()
 
-for i in 0..<maxY {
-    for j in 0..<maxX {
+//첫 검증
+var validation = true
+for i in 0..<N {
+    for j in 0..<M {
+        if box[i][j] == 0 {
+            validation = false
+        }
         if box[i][j] == 1 {
-            queue.append((i,j))
-            // 1이 있는 모든곳의 인덱스 값 queue 넣기
+            q.append((i,j))
         }
     }
 }
 
-var direction = [(-1,0),(0,1),(1,0),(0,-1)]
-//시계방향
-//y가 첫번째,x가 두번째
+if validation {
+    print("0")
+} else {
+    let dy = [-1,0,1,0]
+    let dx = [0,1,0,-1]
+    var qp = 0
+    while qp < q.count {
+        let e = q[qp]
+        for i in 0..<4 {
+            let ny = e.0 + dy[i]
+            let nx = e.1 + dx[i]
 
-var head = 0
-while head < queue.count {
-    let index = queue[head]
-    head += 1
-    
-    let yIndex = index.0
-    let xIndex = index.1
-    
-    for d in direction {
-        let dy = d.0
-        let dx = d.1
-        
-        if yIndex + dy >= 0 && yIndex + dy < maxY && xIndex + dx >= 0 && xIndex + dx < maxX {
-            let ny = yIndex + dy
-            let nx = xIndex + dx
-            
-            if box[ny][nx] == 0 {
-                box[ny][nx] += box[yIndex][xIndex] + 1
-                queue.append((ny,nx))
+            if ny >= 0 && nx >= 0 && ny < N && nx < M {
+                if box[ny][nx] == -1 {
+                    continue
+                }
+                if box[ny][nx] == 0 {
+                    box[ny][nx] = box[e.0][e.1] + 1
+                    q.append((ny,nx))
+                }
+            }
+        }
+        qp += 1
+    }
+
+    //검증 2
+    var max = -1
+    for i in 0..<N {
+        for j in 0..<M {
+            if box[i][j] == 0 {
+                validation = true
+            }
+            if box[i][j] > max {
+                max = box[i][j]
             }
         }
     }
-}
 
-var max = 0
-var flag = true
-for i in 0..<maxY {
-    for j in 0..<maxX {
-        if box[i][j] == 0 {
-            flag = false
-            break
-        }
-        
-        if max < box[i][j] {
-            max = box[i][j]
-        }
+    if validation {
+        print("-1")
+    } else {
+        print(max - 1)
     }
 }
-
-print(flag ? max-1 : -1)
