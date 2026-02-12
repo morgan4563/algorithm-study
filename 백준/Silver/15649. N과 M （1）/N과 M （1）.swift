@@ -1,31 +1,24 @@
 import Foundation
 
-let input = readLine()!.split(separator: " ").map({Int($0)!})
-let N = input[0]
-let M = input[1]
+let input = readLine()!.split(separator: " ").map {Int($0)!}
+let (N,M) = (input[0], input[1])
 
-// 백트랙 뎁스 0부터 타고 들어가다가 뎁스랑 일치하면 하나 나오는거
-
-var visited = Array(repeating: false, count: N + 1)
-var stack = [Int]()
-
+var result = [String]()
+var visited = Array(repeating: false, count: N+1)
 func backTrack(depth: Int) {
     if depth == M {
-        stack.forEach({print($0,terminator: " ")})
-        print()
+        print(result.joined(separator: " "))
         return
     }
-    
     for i in 1...N {
-        //N은 3
-        if !visited[i] {
-            visited[i] = true
-            stack.append(i)
-            backTrack(depth: depth + 1)
-
-            stack.removeLast()
-            visited[i] = false
+        if visited[i] {
+            continue
         }
+        visited[i] = true
+        result.append(String(i))
+        backTrack(depth: depth + 1)
+        visited[i] = false
+        result.removeLast()
     }
 }
 
